@@ -1,0 +1,7 @@
+#include <stdio.h>
+typedef struct Contato Contato;
+FILE* CriaArquivo(char* caminho, char* tipo);
+void FechaArquivo(FILE* arq);
+void Insere(Contato lista, int tam, int qtd, FILE* arq);
+void Listar(Contato lista, int tam, int qtd, FILE* arq);
+Contato* CriaContato(char* nome, char* sobrenome, char* telefone);

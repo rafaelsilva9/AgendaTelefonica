@@ -1,0 +1,73 @@
+#include "ListaTelefonica.h"
+#include <string.h>
+
+struct Contato {
+	long int id;
+	char nome[20];
+	char sobrenome[20];
+	char telefone[20];
+	long int prox;
+} typedef Contato;
+
+FILE* AbreArquivo(char* caminho, char* tipo) {
+	return fopen(caminho, tipo);
+}
+
+void FechaArquivo(FILE* arq) {
+	if (fclose(arq))
+		printf("Arquivo fechado com sucesso!\n");
+	else
+		printf("Arquivo fechado com sucesso!\n");
+}
+
+void Insere(Contato* contato, int qtd, FILE* arq) {
+	contato->prox = 1;
+	if (fwrite(contato, sizeof(Contato), qtd, arq) == qtd) {
+		printf("Valor armazenado com sucesso!\n");
+	}
+	else {
+		printf("Erro ao tentar armazenar arquivo!\n");
+	}
+}
+
+void InsereFim(Contato* novoContato, FILE* arq) {
+	Contato contato;
+	novoContato->prox = -1;
+	int contRegistros = 0;
+	fread(&contato, sizeof(Contato), 1, arq);
+	while (!feof(arq)) {
+		if (strcmp(contato.nome, novoContato->nome) > 1){
+
+		}
+		else if(strcmp(contato.nome, novoContato->nome) < 1){
+			if (contato.prox > novoContato->prox)
+			{
+				novoContato->prox = contato.prox;
+			}
+		}
+		else {
+
+		}
+		fread(&contato, sizeof(Contato), 1, arq);
+	}
+	printf("O local o contato sera armazenado sera: %d\n", novoContato->prox);
+}
+
+void Listar(Contato contato, int tam, int qtd, FILE* arq) {
+	printf("%d", fread(&contato, tam, qtd, arq));
+	while (!feof(arq)) {
+		printf("Nome: %s \n", contato.nome);
+		fread(&contato, tam, qtd, arq);
+	}
+}
+
+Contato* CriaContato(char* nome, char* sobrenome, char* telefone) {
+	Contato* contato = (Contato*)malloc(sizeof(Contato));
+	/*contato.id = 1;
+	contato.prox = 1;*/
+	strcpy(contato->nome, nome);
+	strcpy(contato->sobrenome, sobrenome);
+	strcpy(contato->telefone, telefone);
+	return contato;
+}
+

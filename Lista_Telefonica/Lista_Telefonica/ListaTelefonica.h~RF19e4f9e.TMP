@@ -1,0 +1,7 @@
+#include <stdio.h>
+typedef struct ListaTelefonica Lista;
+FILE* CriaArquivo(char* caminho, char* tipo);
+void FechaArquivo(FILE* arq);
+void Insere(Lista lista, int tam, int qtd, FILE* arq);
+void Listar(Lista lista, int tam, int qtd, FILE* arq);
+Lista Cadastro(Lista lista);

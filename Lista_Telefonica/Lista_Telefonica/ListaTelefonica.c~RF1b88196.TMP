@@ -1,0 +1,48 @@
+#include "ListaTelefonica.h"
+
+struct Contato {
+	long int id;
+	char nome[20];
+	char sobrenome[20];
+	char telefone[20];
+	long int prox;
+} typedef Contato;
+
+FILE* CriaArquivo(char* caminho, char* tipo) {
+	return fopen(caminho, tipo);
+}
+
+void FechaArquivo(FILE* arq) {
+	if (fclose(arq))
+		printf("Arquivo fechado com sucesso!");
+	else
+		printf("Arquivo fechado com sucesso!");
+}
+
+void Insere(Contato lista, int tam, int qtd, FILE* arq) {
+	if (fwrite(&lista, tam, qtd, arq) == 1) {
+		printf("Valor armazenado com sucesso!");
+	}
+	else {
+		printf("Erro ao fachar arquivo!");
+	}
+}
+
+void Listar(Contato lista, int tam, int qtd, FILE* arq) {
+	printf("%d", fread(&lista, tam, qtd, arq));
+	while (!feof(arq)) {
+		printf("Nome: %s \n", lista.nome);
+		fread(&lista, tam, qtd, arq);
+	}
+}
+
+Contato CriaContato(char* nome, char* sobrenome, char*telefone) {
+	printf("Digite o primeiro nome do contato:\n");
+	scanf("%s", &lista.nome);
+	printf("Digite o sobrenome do contato:\n");
+	scanf("%s", &lista.sobrenome);
+	printf("Digite o telefone do contato\n");
+	scanf("%s", &lista.telefone);
+	return lista;
+}
+
