@@ -8,7 +8,9 @@
 int OpcoesPrincipal();
 void MenuPrincipal(int op);
 void CadastrarContato();
+void Edicao();
 void ExcuirContato();
+void EditarContato();
 
 int main()
 {
@@ -39,6 +41,7 @@ void MenuPrincipal(int op) {
 		CadastrarContato();
 		break;
 	case 2:
+		Edicao();
 		break;
 	case 3:
 		ExcuirContato();
@@ -83,4 +86,35 @@ void ExcuirContato() {
 	fflush(stdin);
 
 	ExcuiPeloNome(nome, sobrenome, CAMINHO_ARQUIVO);
+}
+
+void Edicao() {
+	int op = 0;
+	printf("----Editar Contato----\n\n");
+	do {
+		printf("Escolha uma opcao: \n");
+		printf("1 - Alterar contato pelo nome\n");
+		printf("2 - Alterar contato pelo telefone\n");
+		printf("3 - Voltar\n\n");
+		scanf("%d", &op);
+		fflush(stdin);
+		if (op < 1 || op > 3)
+			printf("Digite uma opcao valida");
+	} while (op < 1 || op > 3);
+
+	switch (op)
+	{
+	case 1:
+		EditarContato();
+		break;
+	case 2:
+		break;
+	case 3: 
+		return;
+		break;
+	}
+}
+
+void EditarContato() {
+
 }
