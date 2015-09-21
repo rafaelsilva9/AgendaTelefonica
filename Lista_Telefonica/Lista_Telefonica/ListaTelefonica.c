@@ -12,6 +12,7 @@ struct Contato {
 	char sobrenome[20];
 	char telefone[20];
 	long int prox;
+	int estado;
 } typedef Contato;
 
 struct Header {
@@ -103,69 +104,75 @@ void FechaArquivo(FILE* arq) {
 }
 
 void Insere(Contato* novoContato, char* caminho) {
-	FILE* arq = ArquivoParaLeitura(caminho);
-	Contato cadastro, anterior;
 	long int qtdRegistros = QuantidadeRegistros(caminho);
 
+	novoContato->estado = 0;
 	if (qtdRegistros != 0)
 	{
 		InsereOrdenado(novoContato, caminho, qtdRegistros);
 	}
 	else {
-		fclose(arq);
 		novoContato->prox = -1;
-		InsereContato(novoContato, caminho);
+		InsereContatoNoFim(novoContato, caminho);
 		AtualizaPonteiroHeader(TAMANHO_HEADER, caminho);
 		AtualizaPonteiroTail(TAMANHO_HEADER, caminho);
 	}
 }
 
+
 Contato* InsereOrdenado(Contato* novoContato, char* caminho, long int qtdRegistros) {
 	FILE* arq = ArquivoParaLeitura(caminho);
 	Contato contato, anterior;
-	int qtdPosicao = 0, existeSucessor = 0;
+	long int posicaoNovoContato = PosicaoParaArmazenar(caminho);
+	int /*qtdPosicao = 0, */existeAntecessor = 0;
 
-	fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
-	
-	do {
-		fread(&contato, TAMANHO_CONTATO, 1, arq);
-		if (strcmp(contato.nome, novoContato->nome) < 0)
-		{
-			anterior = contato;
-			anterior.prox = TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
-			novoContato->prox = contato.prox;
-			qtdPosicao++;
-			existeSucessor = 1;
-		}
-		else if (strcmp(contato.nome, novoContato->nome) == 0) {
-			if (strcmp(contato.sobrenome, novoContato->sobrenome) < 1)
+	if (BuscaPonteiroHeader(caminho) != -1)
+	{
+		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+		do {
+			fread(&contato, TAMANHO_CONTATO, 1, arq);
+			if (strcmp(contato.nome, novoContato->nome) < 0)
 			{
 				anterior = contato;
-				anterior.prox = TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
+				anterior.prox = posicaoNovoContato;// TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
 				novoContato->prox = contato.prox;
-				qtdPosicao++;
-				existeSucessor = 1;
+				//qtdPosicao++;
+				existeAntecessor = 1;
 			}
-		}
-		fseek(arq, contato.prox, SEEK_SET);
-	} while (contato.prox != -1);
-	fclose(arq);
+			else if (strcmp(contato.nome, novoContato->nome) == 0) {
+				if (strcmp(contato.sobrenome, novoContato->sobrenome) < 1)
+				{
+					anterior = contato;
+					anterior.prox = posicaoNovoContato;// TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
+					novoContato->prox = contato.prox;
+					//qtdPosicao++;
+					existeAntecessor = 1;
+				}
+			}
+			fseek(arq, contato.prox, SEEK_SET);
+		} while (contato.prox != -1);
+		fclose(arq);
+	}
 
-	if (existeSucessor)
+	if (existeAntecessor)
 	{
 		AtualizaContato(&anterior, posicaoContatoPeloId(anterior.id, caminho), caminho);
-		if (qtdRegistros == qtdPosicao)
+		//if (qtdRegistros == qtdPosicao)
+		if (novoContato->prox == -1)
 		{
-			AtualizaPonteiroTail(TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER, caminho);
+			AtualizaPonteiroTail(posicaoNovoContato, caminho);
 		}
-
 	}
 	else {
 		novoContato->prox = BuscaPonteiroHeader(caminho);
-		AtualizaPonteiroHeader(TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER, caminho);
+		AtualizaPonteiroHeader(posicaoNovoContato, caminho);
 	}
 
-	InsereContato(novoContato, caminho);
+	if (posicaoNovoContato == TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER)
+		InsereContatoNoFim(novoContato, caminho);
+	else
+		InsereContatoNaPosicao(novoContato, posicaoNovoContato, caminho);
+
 	return novoContato;
 }
 
@@ -180,7 +187,7 @@ Contato* AtualizaContato(Contato* contato, long int posicao, char* caminho) {
 	return contato;
 }
 
-Contato* InsereContato(Contato* contato, char* caminho) {
+Contato* InsereContatoNoFim(Contato* contato, char* caminho) {
 	FILE* arq = ArquivoParaEscrita(caminho);
 	int resultado;
 
@@ -189,8 +196,36 @@ Contato* InsereContato(Contato* contato, char* caminho) {
 	if (fwrite(contato, TAMANHO_CONTATO, 1, arq) == 1) {
 		fflush(arq);
 		resultado = 1;
-		//AtualizaHeader();
 		AtualizaQuantidadeRegistros(caminho);
+	}
+	else
+	{
+		resultado = 0;
+	}
+
+	fclose(arq);
+
+	if (resultado) {
+		printf("Contato registrado com sucesso!\n");
+		return contato;
+	}
+	else {
+		printf("Não foi possivel cadastrar contato!\n");
+		return NULL;
+	}
+}
+
+Contato* InsereContatoNaPosicao(Contato* contato, long int posicao, char* caminho) {
+	FILE* arq = ArquivoParaAlterar(caminho);
+	int resultado;
+
+	IncrementaID(contato, caminho);
+
+	fseek(arq, posicao, SEEK_SET);
+	if (fwrite(contato, TAMANHO_CONTATO, 1, arq) == 1) {
+		AtualizaQuantidadeRegistros(caminho);
+		fflush(arq);
+		resultado = 1;
 	}
 	else
 	{
@@ -279,7 +314,7 @@ long int BuscaPonteiroTail(char* caminho) {
 
 	fread(&header, TAMANHO_HEADER, 1, arq);
 	posicao = header.tail;
-
+	fclose(arq);
 	return posicao;
 }
 
@@ -299,19 +334,25 @@ void Listar(char* caminho) {
 	FILE* arq = ArquivoParaLeitura(caminho);
 	Contato contato;
 
-	printf("------ Lista de Contatos ------ \n\n");
-	fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
-	do
+	if (BuscaPonteiroHeader(caminho) != -1)
 	{
-		fread(&contato, TAMANHO_CONTATO, 1, arq);
+		printf("------ Lista de Contatos ------ \n\n");
+		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+		do
+		{
+			fread(&contato, TAMANHO_CONTATO, 1, arq);
+			printf("Id: %d\n", contato.id);
+			printf("Nome: %s\n", contato.nome);
+			printf("Sobrenome: %s\n", contato.sobrenome);
+			printf("Telefone: %s\n", contato.telefone);
+			printf("Estado: %d\n", contato.estado);
+			printf("\n");
+			fseek(arq, contato.prox, SEEK_SET);
+		} while (contato.prox != -1);
+	}
+	else
+		printf("Lista vazia!\n");
 
-		printf("Id: %d\n", contato.id);
-		printf("Nome: %s\n", contato.nome);
-		printf("Sobrenome: %s\n", contato.sobrenome);
-		printf("Telefone: %s\n", contato.telefone);
-		printf("\n");
-		fseek(arq, contato.prox, SEEK_SET);
-	} while (contato.prox != -1);
 	fclose(arq);
 }
 
@@ -336,10 +377,135 @@ long int posicaoContatoPeloId(long int id, char* caminho) {
 		posicao += TAMANHO_CONTATO;
 		fread(&contato, TAMANHO_CONTATO, 1, arq);
 	}
-
+	fclose(arq);
 	return posicao;
 }
 
-void Excuir(char* caminho) {
+void ExcuiPeloNome(char* nome, char* sobrenome, char* caminho) {
+	int resultado;
+	FILE* arq = ArquivoParaAlterar(caminho);
+	Contato* contato = BuscarContatoPeloNome(nome, sobrenome, caminho);
+	long int posicao;
 
+	if (contato != NULL && contato->estado != 1) {
+		posicao = posicaoContatoPeloId(contato->id, caminho);
+		contato->estado = 1;
+		fseek(arq, posicao, SEEK_SET);
+		resultado = fwrite(contato, TAMANHO_CONTATO, 1, arq);
+		fflush(arq);
+		fclose(arq);
+		DesconectaDaLista(contato, caminho);
+		free(contato);
+		if (resultado)
+			printf("Contato excuido com sucesso! \n");
+		else
+			printf("Erro ao tentar excuir esse contato! \n");
+	}
+	else
+		printf("Esse contato nao existe!\n");
+
+}
+
+void DesconectaDaLista(Contato* contato, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato c;
+
+	if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho) && 
+		posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroTail(caminho))
+	{
+		AtualizaPonteiroHeader(-1, caminho);
+		AtualizaPonteiroTail(-1, caminho);
+	}
+	else
+	{
+		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+		do
+		{
+			fread(&c, TAMANHO_CONTATO, 1, arq);
+			if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho))
+			{
+				AtualizaPonteiroHeader(c.prox, caminho);
+				break;
+			}
+			if (c.estado != 1)
+			{
+				if (VerficaEstadoContato(c.prox, caminho) == 1) {
+
+					c.prox = BuscarContatoPelaPosicao(c.prox, caminho)->prox;
+					break;
+				}
+			}
+			fseek(arq, c.prox, SEEK_SET);
+		} while (c.prox != -1);
+		AtualizaContato(&c, posicaoContatoPeloId(c.id, caminho), caminho);
+	}
+	fclose(arq);
+}
+
+Contato* BuscarContatoPeloNome(char* nome, char* sobrenome, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato* contato = (Contato*)malloc(sizeof(Contato));
+	int resultado = 0;
+
+	fseek(arq, TAMANHO_HEADER, SEEK_SET);
+	fread(contato, TAMANHO_CONTATO, 1, arq);
+	while (!feof(arq))
+	{
+		if (contato->estado != 1)
+		{
+			if (strcmp(contato->nome, nome) == 0 && strcmp(contato->sobrenome, sobrenome) == 0) {
+				resultado = 1;
+				break;
+			}
+		}
+
+		fread(contato, TAMANHO_CONTATO, 1, arq);
+	}
+
+	fclose(arq);
+
+	if (resultado)
+		return contato;
+	else
+		return NULL;
+}
+
+Contato* BuscarContatoPelaPosicao(long int posicao, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+
+	Contato contato;
+	fseek(arq, posicao, SEEK_SET);
+	fread(&contato, TAMANHO_CONTATO, 1, arq);
+
+	return &contato;
+}
+
+long int PosicaoParaArmazenar(char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato contato;
+	long int posicao = 12;
+
+	fseek(arq, TAMANHO_HEADER, SEEK_SET);
+	fread(&contato, TAMANHO_CONTATO, 1, arq);
+	while (!feof(arq)) {
+		if (contato.estado == 1)
+			break;
+		posicao += TAMANHO_CONTATO;
+		fread(&contato, TAMANHO_CONTATO, 1, arq);
+	}
+	fclose(arq);
+	return posicao;
+}
+
+int VerficaEstadoContato(long int posicao, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato contato;
+	int estado = 0;
+
+	fseek(arq, posicao, SEEK_SET);
+	fread(&contato, TAMANHO_CONTATO, 1, arq);
+	estado = contato.estado;
+	fclose(arq);
+
+	return estado;
 }
