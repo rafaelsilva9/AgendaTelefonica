@@ -8,6 +8,7 @@
 int OpcoesPrincipal();
 void MenuPrincipal(int op);
 void CadastrarContato();
+void ExcuirContato();
 
 int main()
 {
@@ -32,6 +33,7 @@ int OpcoesPrincipal() {
 }
 
 void MenuPrincipal(int op) {
+	AbreArquivo(CAMINHO_ARQUIVO);
 	switch (op) {
 	case 1:
 		CadastrarContato();
@@ -39,6 +41,7 @@ void MenuPrincipal(int op) {
 	case 2:
 		break;
 	case 3:
+		ExcuirContato();
 		break;
 	case 4:
 		Listar(CAMINHO_ARQUIVO);
@@ -67,4 +70,17 @@ void CadastrarContato() {
 	Insere(contato, CAMINHO_ARQUIVO);
 
 	free(contato);
+}
+
+void ExcuirContato() {
+	char nome[20], sobrenome[20];
+	printf("Digite as informacoes do contato que deseja excuir:\n\n");
+	printf("Digite o nome do contato: \n");
+	scanf("%s", &nome);
+	fflush(stdin);
+	printf("Digite o sobrenome do contato: \n");
+	scanf("%s", &sobrenome);
+	fflush(stdin);
+
+	ExcuiPeloNome(nome, sobrenome, CAMINHO_ARQUIVO);
 }
