@@ -1,14 +1,26 @@
-﻿Build started 21/09/2015 17:21:02.
-     1>Project "D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Lista_Telefonica\Lista_Telefonica.vcxproj" on node 2 (Build target(s)).
+﻿Build started 22/09/2015 11:26:47.
+     1>Project "C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Lista_Telefonica\Lista_Telefonica.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CRT_SECURE_NO_WARNINGS /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:prompt Principal.c
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CRT_SECURE_NO_WARNINGS /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TC /analyze- /errorReport:prompt ListaTelefonica.c Principal.c
          Principal.c
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\principal.c(45): warning C4098: 'MenuPrincipal': 'void' function returning a value
+         ListaTelefonica.c
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(74): warning C4047: 'return': 'long' differs in levels of indirection from 'void *'
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(64): warning C4101: 'qtdegistros': unreferenced local variable
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(88): warning C4013: 'free' undefined; assuming extern returning int
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(193): warning C4020: 'IncrementaID': too many actual parameters
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(221): warning C4020: 'IncrementaID': too many actual parameters
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(246): warning C4029: declared formal parameter list different from definition
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(359): warning C4013: 'malloc' undefined; assuming extern returning int
+         Generating Code...
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(266): warning C4172: returning address of local variable or temporary: header
+     1>c:\users\rjs\documents\visual studio 2015\projects\lista_telefonica\lista_telefonica\listatelefonica.c(479): warning C4172: returning address of local variable or temporary: contato
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Debug\Lista_Telefonica.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Debug\Lista_Telefonica.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Debug\Lista_Telefonica.lib" /MACHINE:X86 Debug\ListaTelefonica.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Debug\Lista_Telefonica.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Debug\Lista_Telefonica.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Debug\Lista_Telefonica.lib" /MACHINE:X86 Debug\ListaTelefonica.obj
          Debug\Principal.obj
-         Lista_Telefonica.vcxproj -> D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Debug\Lista_Telefonica.exe
-     1>Done Building Project "D:\Pessoal\Projetos\AgendaTelefonica\Lista_Telefonica\Lista_Telefonica\Lista_Telefonica.vcxproj" (Build target(s)).
+         Lista_Telefonica.vcxproj -> C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Debug\Lista_Telefonica.exe
+     1>Done Building Project "C:\Users\rjs\Documents\Visual Studio 2015\Projects\Lista_Telefonica\Lista_Telefonica\Lista_Telefonica.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.58
+Time Elapsed 00:00:01.10

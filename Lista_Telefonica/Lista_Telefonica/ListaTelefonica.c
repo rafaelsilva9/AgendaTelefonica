@@ -27,7 +27,6 @@ FILE* AbreArquivo(char* caminho) {
 		return CriaArquivoComHeader(caminho);
 	}
 	else {
-		printf("Arquivo aberto com sucesso!\n");
 		return arq;
 	}
 }
@@ -510,8 +509,72 @@ int VerficaEstadoContato(long int posicao, char* caminho) {
 	return estado;
 }
 
-void EditaContatoPeloNome(char* nome, char* sobrenome, char* caminho) {
-	Contato* contato = BuscarContatoPeloNome(nome, sobrenome, caminho);
-	AtualizaContato(contato, posicaoContatoPeloId(contato->id, caminho), caminho);
-	free(contato);
+void EditaContatoPeloNome(Contato* anterior, Contato* editado, char* caminho) {
+	strcpy(anterior->nome, editado->nome);
+	strcpy(anterior->sobrenome, editado->sobrenome);
+	strcpy(anterior->telefone, editado->telefone);
+	DesconectaDaLista(anterior, caminho);
+	/*contato = Reordenar(contato, caminho);
+	if (contato != NULL)
+	{
+		printf("Contato editado com sucesso!");
+	}
+	else {
+		printf("Nao foi possivel editar esse contato!");
+	}*/
+	Reordenar(anterior, caminho);
+	//AtualizaContato(anterior, posicaoContatoPeloId(anterior->id, caminho), caminho);
+}
+
+Contato* Reordenar(Contato* contatoEditado, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato contato, anterior;
+	long int posicaoNovoContato = PosicaoParaArmazenar(caminho);
+	int existeAntecessor = 0;
+
+	if (BuscaPonteiroHeader(caminho) != -1)
+	{
+		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+		do {
+			fread(&contato, TAMANHO_CONTATO, 1, arq);
+			if (contato.id != contatoEditado->id)
+			{
+				if (strcmp(contato.nome, contatoEditado->nome) < 0)
+				{
+					anterior = contato;
+					anterior.prox = posicaoNovoContato;
+					contatoEditado->prox = contato.prox;
+					existeAntecessor = 1;
+				}
+				else if (strcmp(contato.nome, contatoEditado->nome) == 0) {
+					if (strcmp(contato.sobrenome, contatoEditado->sobrenome) < 1)
+					{
+						anterior = contato;
+						anterior.prox = posicaoNovoContato;
+						contatoEditado->prox = contato.prox;
+						existeAntecessor = 1;
+					}
+				}
+			}
+			fseek(arq, contato.prox, SEEK_SET);
+		} while (contato.prox != -1);
+		fclose(arq);
+	}
+
+	if (existeAntecessor)
+	{
+		AtualizaContato(&anterior, posicaoContatoPeloId(anterior.id, caminho), caminho);
+		if (contatoEditado->prox == -1)
+		{
+			AtualizaPonteiroTail(posicaoNovoContato, caminho);
+		}
+	}
+	else {
+		contatoEditado->prox = BuscaPonteiroHeader(caminho);
+		AtualizaPonteiroHeader(posicaoNovoContato, caminho);
+	}
+
+	AtualizaContato(contatoEditado, posicaoContatoPeloId(contatoEditado->id, caminho), caminho);
+
+	return contatoEditado;
 }
