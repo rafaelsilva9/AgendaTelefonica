@@ -122,7 +122,7 @@ Contato* InsereOrdenado(Contato* novoContato, char* caminho, long int qtdRegistr
 	FILE* arq = ArquivoParaLeitura(caminho);
 	Contato contato, anterior;
 	long int posicaoNovoContato = PosicaoParaArmazenar(caminho);
-	int /*qtdPosicao = 0, */existeAntecessor = 0;
+	int existeAntecessor = 0;
 
 	if (BuscaPonteiroHeader(caminho) != -1)
 	{
@@ -132,18 +132,16 @@ Contato* InsereOrdenado(Contato* novoContato, char* caminho, long int qtdRegistr
 			if (strcmp(contato.nome, novoContato->nome) < 0)
 			{
 				anterior = contato;
-				anterior.prox = posicaoNovoContato;// TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
+				anterior.prox = posicaoNovoContato;
 				novoContato->prox = contato.prox;
-				//qtdPosicao++;
 				existeAntecessor = 1;
 			}
 			else if (strcmp(contato.nome, novoContato->nome) == 0) {
 				if (strcmp(contato.sobrenome, novoContato->sobrenome) < 1)
 				{
 					anterior = contato;
-					anterior.prox = posicaoNovoContato;// TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER;
+					anterior.prox = posicaoNovoContato;
 					novoContato->prox = contato.prox;
-					//qtdPosicao++;
 					existeAntecessor = 1;
 				}
 			}
@@ -155,7 +153,6 @@ Contato* InsereOrdenado(Contato* novoContato, char* caminho, long int qtdRegistr
 	if (existeAntecessor)
 	{
 		AtualizaContato(&anterior, posicaoContatoPeloId(anterior.id, caminho), caminho);
-		//if (qtdRegistros == qtdPosicao)
 		if (novoContato->prox == -1)
 		{
 			AtualizaPonteiroTail(posicaoNovoContato, caminho);
@@ -487,6 +484,34 @@ Contato* BuscarContatoPeloNome(char* nome, char* sobrenome, char* caminho) {
 		if (contato->estado != 1)
 		{
 			if (strcmp(contato->nome, nome) == 0 && strcmp(contato->sobrenome, sobrenome) == 0) {
+				resultado = 1;
+				break;
+			}
+		}
+
+		fread(contato, TAMANHO_CONTATO, 1, arq);
+	}
+
+	fclose(arq);
+
+	if (resultado)
+		return contato;
+	else
+		return NULL;
+}
+
+Contato* BuscarContatoPeloTelefone(char* telefone, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato* contato = (Contato*)malloc(sizeof(Contato));
+	int resultado = 0;
+
+	fseek(arq, TAMANHO_HEADER, SEEK_SET);
+	fread(contato, TAMANHO_CONTATO, 1, arq);
+	while (!feof(arq))
+	{
+		if (contato->estado != 1)
+		{
+			if (strcmp(contato->telefone, telefone) == 0) {
 				resultado = 1;
 				break;
 			}

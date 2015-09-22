@@ -41,6 +41,9 @@ long int IncrementaID(Contato* contato);
 //Retorna o contato informado pelo nome e sobrenome
 //Deve-se liberar o contato da memória após usa-lo
 Contato* BuscarContatoPeloNome(char* nome, char* sobrenome, char* caminho);
+//Retorna o contato informado pelo telefone
+//Deve-se liberar o contato da memória após usa-lo
+Contato* BuscarContatoPeloTelefone(char* telefone, char* caminho);
 //Retorna o contato da posicao passada como parametro
 Contato* BuscarContatoPelaPosicao(long int posicao, char* caminho);
 //Verifica se o contato esta ativo(ligado a lista) ou inativo(excluido)

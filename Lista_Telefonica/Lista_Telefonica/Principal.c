@@ -10,7 +10,7 @@ void RedirecionaOpcao(int op);
 void CadastrarContato();
 void Edicao();
 void ExcuirContato();
-void EditaContatoPorNome();
+void EditaContato(int op);
 Contato* InformacoesContato();
 
 int main()
@@ -108,9 +108,10 @@ void Edicao() {
 	switch (op)
 	{
 	case 1:
-		EditaContatoPorNome();
+		EditaContato(1);
 		break;
 	case 2:
+		EditaContato(2);
 		break;
 	case 3:
 		return;
@@ -118,24 +119,33 @@ void Edicao() {
 	}
 }
 
-void EditaContatoPorNome() {
-	char nome[20], sobrenome[20];
+void EditaContato(int op) {
+	char nome[20], sobrenome[20], telefone[20];
 	Contato* anterior;
 	Contato* editado;
 
 	printf("----Editar Contato----\n\n");
 	printf("Digite as informacoes do contato que deseja editar!\n\n");
-	printf("Digite o nome do contato: \n");
-	scanf("%s", &nome);
-	fflush(stdin);
-	printf("Digite o sobrenome do contato: \n");
-	scanf("%s", &sobrenome);
+	if (op == 1) {
+		printf("Digite o nome do contato: \n");
+		scanf("%s", &nome);
+		fflush(stdin);
+		printf("Digite o sobrenome do contato: \n");
+		scanf("%s", &sobrenome);
+		anterior = BuscarContatoPeloNome(nome, sobrenome, CAMINHO_ARQUIVO);
+	}
+	if (op == 2) {
+		printf("Digite o telefone do contato: \n");
+		scanf("%s", &telefone);
+		anterior = BuscarContatoPeloTelefone(telefone, CAMINHO_ARQUIVO);
+	}
+
 	fflush(stdin);
 	system("cls");
 	printf("----Editar Contato----\n\n");
-	printf("Digite as novas informacoes desse contato!\n\n");
-	anterior = BuscarContatoPeloNome(nome, sobrenome, CAMINHO_ARQUIVO);
+
 	if (anterior != NULL) {
+		printf("Digite as novas informacoes desse contato!\n\n");
 		editado = InformacoesContato();
 		EditaContatoPeloNome(anterior, editado, CAMINHO_ARQUIVO);
 		free(editado);
