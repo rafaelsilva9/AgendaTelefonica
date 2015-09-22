@@ -13,6 +13,7 @@ long int IncrementaID(Contato* contato);
 Contato* BuscarContatoPeloNome(char* nome, char* sobrenome, char* caminho);
 Contato* BuscarContatoPelaPosicao(long int posicao, char* caminho);
 int VerficaEstadoContato(long int posicao, char* caminho);
+void EditaContatoPeloNome(char* nome, char* sobrenome, char* caminho);
 
 FILE* CriaArquivoComHeader(char* caminho);
 FILE* ArquivoParaLeitura(char* caminho);

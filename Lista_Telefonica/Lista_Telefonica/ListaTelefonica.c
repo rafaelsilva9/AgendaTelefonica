@@ -509,3 +509,9 @@ int VerficaEstadoContato(long int posicao, char* caminho) {
 
 	return estado;
 }
+
+void EditaContatoPeloNome(char* nome, char* sobrenome, char* caminho) {
+	Contato* contato = BuscarContatoPeloNome(nome, sobrenome, caminho);
+	AtualizaContato(contato, posicaoContatoPeloId(contato->id, caminho), caminho);
+	free(contato);
+}
