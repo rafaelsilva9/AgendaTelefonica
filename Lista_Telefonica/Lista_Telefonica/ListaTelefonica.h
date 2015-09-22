@@ -73,5 +73,7 @@ void Listar(char* caminho);
 
 //Excui o contato pelo nome passado no parametro
 void ExcuiPeloNome(char* nome, char* sobrenome, char* caminho);
-//Desconecta um contato da lista
-void DesconectaDaLista(Contato* contato, char* caminho);
+//Desconecta um contato excluído da lista
+void DesconectaExcluidoDaLista(Contato* contato, char* caminho);
+//Desconecta um contato editado da lista
+void DesconectaEditadoDaLista(Contato* contato, char* caminho);

@@ -2,7 +2,6 @@
 #include "ListaTelefonica.h"
 #include <string.h>
 
-#define CAMINHO_ARQUIVO "../arquivo.bin"
 #define TAMANHO_HEADER sizeof(Header)
 #define TAMANHO_CONTATO sizeof(Contato)
 
@@ -393,7 +392,7 @@ void ExcuiPeloNome(char* nome, char* sobrenome, char* caminho) {
 		resultado = fwrite(contato, TAMANHO_CONTATO, 1, arq);
 		fflush(arq);
 		fclose(arq);
-		DesconectaDaLista(contato, caminho);
+		DesconectaExcluidoDaLista(contato, caminho);
 		free(contato);
 		if (resultado)
 			printf("Contato excuido com sucesso! \n");
@@ -405,11 +404,11 @@ void ExcuiPeloNome(char* nome, char* sobrenome, char* caminho) {
 
 }
 
-void DesconectaDaLista(Contato* contato, char* caminho) {
+void DesconectaExcluidoDaLista(Contato* contato, char* caminho) {
 	FILE* arq = ArquivoParaLeitura(caminho);
 	Contato c;
 
-	if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho) && 
+	if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho) &&
 		posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroTail(caminho))
 	{
 		AtualizaPonteiroHeader(-1, caminho);
@@ -430,6 +429,41 @@ void DesconectaDaLista(Contato* contato, char* caminho) {
 			{
 				if (VerficaEstadoContato(c.prox, caminho) == 1) {
 
+					c.prox = BuscarContatoPelaPosicao(c.prox, caminho)->prox;
+					break;
+				}
+			}
+			fseek(arq, c.prox, SEEK_SET);
+		} while (c.prox != -1);
+		AtualizaContato(&c, posicaoContatoPeloId(c.id, caminho), caminho);
+	}
+	fclose(arq);
+}
+
+void DesconectaEditadoDaLista(Contato* contato, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato c;
+
+	if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho) &&
+		posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroTail(caminho))
+	{
+		AtualizaPonteiroHeader(-1, caminho);
+		AtualizaPonteiroTail(-1, caminho);
+	}
+	else
+	{
+		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+		do
+		{
+			fread(&c, TAMANHO_CONTATO, 1, arq);
+			if (posicaoContatoPeloId(contato->id, caminho) == BuscaPonteiroHeader(caminho))
+			{
+				AtualizaPonteiroHeader(c.prox, caminho);
+				break;
+			}
+			if (c.estado != 1)
+			{
+				if (BuscarContatoPelaPosicao(c.prox, caminho)->id == contato->id) {
 					c.prox = BuscarContatoPelaPosicao(c.prox, caminho)->prox;
 					break;
 				}
@@ -513,23 +547,17 @@ void EditaContatoPeloNome(Contato* anterior, Contato* editado, char* caminho) {
 	strcpy(anterior->nome, editado->nome);
 	strcpy(anterior->sobrenome, editado->sobrenome);
 	strcpy(anterior->telefone, editado->telefone);
-	DesconectaDaLista(anterior, caminho);
-	/*contato = Reordenar(contato, caminho);
-	if (contato != NULL)
-	{
-		printf("Contato editado com sucesso!");
-	}
-	else {
-		printf("Nao foi possivel editar esse contato!");
-	}*/
+	DesconectaEditadoDaLista(anterior, caminho);
+
 	Reordenar(anterior, caminho);
-	//AtualizaContato(anterior, posicaoContatoPeloId(anterior->id, caminho), caminho);
+
+	printf("Contato editado com sucesso!\n\n");
 }
 
 Contato* Reordenar(Contato* contatoEditado, char* caminho) {
 	FILE* arq = ArquivoParaLeitura(caminho);
 	Contato contato, anterior;
-	long int posicaoNovoContato = PosicaoParaArmazenar(caminho);
+	long int posicaoNovoContato = posicaoContatoPeloId(contatoEditado->id, caminho);
 	int existeAntecessor = 0;
 
 	if (BuscaPonteiroHeader(caminho) != -1)
