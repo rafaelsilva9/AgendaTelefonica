@@ -60,6 +60,8 @@ long int PosicaoParaArmazenar(char* caminho);
 //Edita contato informado pelo nome
 void EditaContatoPeloNome(Contato* anterior, Contato* editado, char* caminho);
 //
+void Ordenar(Contato* novoContato, char* caminho);
+//
 Contato* Reordenar(Contato* contatoEditado, char* caminho);
 
 //Insere contato na lista

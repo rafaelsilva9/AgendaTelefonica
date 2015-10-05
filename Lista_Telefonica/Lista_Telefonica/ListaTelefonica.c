@@ -126,43 +126,13 @@ Contato* InsereOrdenado(Contato* novoContato, char* caminho, long int qtdRegistr
 
 	if (BuscaPonteiroHeader(caminho) != -1)
 	{
-		fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
-		do {
-			fread(&contato, TAMANHO_CONTATO, 1, arq);
-			if (strcmp(contato.nome, novoContato->nome) < 0)
-			{
-				anterior = contato;
-				anterior.prox = posicaoNovoContato;
-				novoContato->prox = contato.prox;
-				existeAntecessor = 1;
-			}
-			else if (strcmp(contato.nome, novoContato->nome) == 0) {
-				if (strcmp(contato.sobrenome, novoContato->sobrenome) < 1)
-				{
-					anterior = contato;
-					anterior.prox = posicaoNovoContato;
-					novoContato->prox = contato.prox;
-					existeAntecessor = 1;
-				}
-			}
-			fseek(arq, contato.prox, SEEK_SET);
-		} while (contato.prox != -1);
+		Ordenar(novoContato, caminho);
 		fclose(arq);
 	}
-
-	if (existeAntecessor)
+	if (novoContato->prox == -1)
 	{
-		AtualizaContato(&anterior, posicaoContatoPeloId(anterior.id, caminho), caminho);
-		if (novoContato->prox == -1)
-		{
-			AtualizaPonteiroTail(posicaoNovoContato, caminho);
-		}
+		AtualizaPonteiroTail(posicaoNovoContato, caminho);
 	}
-	else {
-		novoContato->prox = BuscaPonteiroHeader(caminho);
-		AtualizaPonteiroHeader(posicaoNovoContato, caminho);
-	}
-
 	if (posicaoNovoContato == TAMANHO_CONTATO * qtdRegistros + TAMANHO_HEADER)
 		InsereContatoNoFim(novoContato, caminho);
 	else
@@ -577,6 +547,51 @@ void EditaContatoPeloNome(Contato* anterior, Contato* editado, char* caminho) {
 	Reordenar(anterior, caminho);
 
 	printf("Contato editado com sucesso!\n\n");
+}
+
+void Ordenar(Contato* novoContato, char* caminho) {
+	FILE* arq = ArquivoParaLeitura(caminho);
+	Contato contato, anterior;
+	long int posicaoNovoContato = PosicaoParaArmazenar(caminho);
+	int existeAntecessor = 0;
+	fseek(arq, BuscaPonteiroHeader(caminho), SEEK_SET);
+	do {
+		fread(&contato, TAMANHO_CONTATO, 1, arq);
+		if (strcmp(contato.nome, novoContato->nome) < 0)
+		{
+			anterior = contato;
+			anterior.prox = posicaoNovoContato;
+			novoContato->prox = contato.prox;
+			existeAntecessor = 1;
+		}
+		else if (strcmp(contato.nome, novoContato->nome) == 0) {
+			if (strcmp(contato.sobrenome, novoContato->sobrenome) < 1)
+			{
+				anterior = contato;
+				anterior.prox = posicaoNovoContato;
+				novoContato->prox = contato.prox;
+				existeAntecessor = 1;
+			}
+		}
+		fseek(arq, contato.prox, SEEK_SET);
+	} while (contato.prox != -1);
+
+	if (existeAntecessor)
+	{
+		AtualizaContato(&anterior, posicaoContatoPeloId(anterior.id, caminho), caminho);
+	}
+	else {
+		novoContato->prox = BuscaPonteiroHeader(caminho);
+		AtualizaPonteiroHeader(posicaoNovoContato, caminho);
+	}
+}
+
+int ComparaNomes(char* n1, char* n2) {
+	int resultado;
+	if (strcmp(n1, n2) < 0)
+		return 1;
+	else
+		return 0;
 }
 
 Contato* Reordenar(Contato* contatoEditado, char* caminho) {
